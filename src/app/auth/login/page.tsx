@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { authService } from '@/api/auth';
+import { userService } from '@/api/user';
 import { useAuthStore } from '@/store/useAuthStore';
 import { toast } from 'react-hot-toast';
 
@@ -22,13 +23,30 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const { data } = await authService.login({ email, password });
-      // In a real app, we would fetch user profile here as well
-      // For now we just set the token and dummy user data based on id
-      setAuth({ id: data.data.id, email, name: 'User', role: 'USER' }, data.data.access_token);
-      toast.success('Login successful!');
-      router.push('/');
+      const token = data.data.access_token;
+      
+      // Save token directly so the API client request interceptor includes it in the header
+      localStorage.setItem('access_token', token);
+
+      // Retrieve actual user profile details (including role, name, profile picture)
+      const { data: profileRes } = await userService.getProfile();
+      const profile = (profileRes as any).data || profileRes;
+
+      // Commit fully resolved dynamic profile to Zustand store
+      setAuth(profile, token);
+      
+      toast.success(`Welcome back, ${profile.name || 'User'}!`);
+      
+      // Redirect dynamically based on clearance level
+      if (profile.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to login');
+      // Clean up token if handshake failed
+      localStorage.removeItem('access_token');
+      toast.error(error.response?.data?.message || 'Failed to authorize credentials');
     } finally {
       setIsLoading(false);
     }

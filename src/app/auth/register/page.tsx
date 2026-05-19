@@ -29,7 +29,17 @@ export default function RegisterPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await authService.signup(formData);
+      let formattedDob = formData.dob;
+      if (formData.dob && formData.dob.includes('-')) {
+        const parts = formData.dob.split('-');
+        if (parts[0].length === 4) {
+          formattedDob = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+      }
+      await authService.signup({
+        ...formData,
+        dob: formattedDob
+      });
       toast.success('Registration successful! Please login.');
       router.push('/auth/login');
     } catch (error: any) {

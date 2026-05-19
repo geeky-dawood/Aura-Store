@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
 
-      <body className="antialiased selection:bg-accent selection:text-white">
+      <body className="antialiased selection:bg-accent selection:text-white" suppressHydrationWarning>
         <Navbar />
         <main className="min-h-screen pt-20">
           {children}

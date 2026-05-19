@@ -19,18 +19,23 @@ export default function ProductDetailsPage() {
   const addItem = useCartStore((state) => state.addItem);
 
   React.useEffect(() => {
+    let cancelled = false;
     const fetchProduct = async () => {
       try {
         const { data } = await productService.getAll();
-        const found = Array.isArray(data) ? data.find((p: Product) => p.id === id) : null;
-        setProduct(found || null);
+        if (cancelled) return;
+        // The API returns { data: Product[], meta: ... }
+        const products = Array.isArray(data.data) ? data.data : [];
+        const found = products.find((p: Product) => p.id === id) || null;
+        setProduct(found);
       } catch (error) {
         console.error('Failed to fetch product', error);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     fetchProduct();
+    return () => { cancelled = true; };
   }, [id]);
 
   const handleAddToCart = () => {

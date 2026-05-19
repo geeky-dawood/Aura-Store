@@ -23,6 +23,7 @@ export const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'Products', href: '/products' },
     { name: 'Categories', href: '/categories' },
+    ...(mounted && user?.role === 'ADMIN' ? [{ name: 'Admin', href: '/admin' }] : []),
   ];
 
   return (
@@ -69,7 +70,7 @@ export const Navbar = () => {
 
               </Link>
 
-              {user ? (
+              {mounted && (user ? (
                 <div className="flex items-center space-x-2">
                   <Link href="/profile">
                     <Button variant="ghost" size="icon" className="hover:text-accent">
@@ -84,7 +85,7 @@ export const Navbar = () => {
                 <Link href="/auth/login">
                   <Button variant="cta" size="sm" className="px-6 rounded-full font-bold">Login</Button>
                 </Link>
-              )}
+              ))}
             </div>
           </div>
 

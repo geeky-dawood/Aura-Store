@@ -46,14 +46,13 @@ export default function CheckoutPage() {
         throw new Error('Could not generate Order ID');
       }
 
-      const { data: paymentData } = await paymentService.checkout({
+      const { data: paymentDataRes } = await paymentService.checkout({
         order_id: String(orderId),
-
-        amount: Math.round(totalPrice() * 100),
         currency: 'usd',
-        description: `Order ${orderId} for ${user.email}`
+        description: 'New payment'
       });
 
+      const paymentData = (paymentDataRes as any).data || paymentDataRes;
       toast.success('Redirecting to secure payment...');
       
       if (paymentData.checkout_url) {
