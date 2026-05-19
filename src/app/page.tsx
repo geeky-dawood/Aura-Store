@@ -41,8 +41,8 @@ export default function Home() {
     <div className="flex flex-col relative">
       {/* Morphing Background Elements */}
       <div className="absolute top-0 left-0 w-full h-screen overflow-hidden pointer-events-none -z-10">
-        <motion.div 
-          animate={{ 
+        <motion.div
+          animate={{
             scale: [1, 1.2, 1],
             rotate: [0, 90, 0],
             x: [0, 50, 0],
@@ -51,8 +51,8 @@ export default function Home() {
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full"
         />
-        <motion.div 
-          animate={{ 
+        <motion.div
+          animate={{
             scale: [1.2, 1, 1.2],
             rotate: [0, -90, 0],
             x: [0, -50, 0],
@@ -80,14 +80,14 @@ export default function Home() {
             <Star className="h-4 w-4 fill-accent" />
             <span>Exclusivity Defined</span>
           </motion.div>
-          
+
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-tight">
             THE NEW <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-gradient">STANDARD</span>
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Curated collections for the modern connoisseur. Discover high-end fashion 
+            Curated collections for the modern connoisseur. Discover high-end fashion
             and precision electronics designed to elevate your daily life.
           </p>
 
@@ -106,14 +106,14 @@ export default function Home() {
         </motion.div>
 
         {/* Hero Image / Element */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 1 }}
           className="mt-20 w-full max-w-6xl aspect-[21/9] relative rounded-3xl overflow-hidden shadow-2xl border border-white/10"
         >
           <Image
-            src="/hero.png"
+            src="/hero.jpg"
             alt="Premium Collection"
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
@@ -121,7 +121,7 @@ export default function Home() {
             priority
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          <div className="absolute inset-0  from-background via-transparent to-transparent" />
         </motion.div>
       </section>
 
@@ -187,7 +187,7 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4">CURATED COLLECTIONS</h2>
             <div className="h-1.5 w-24 gold-gradient mx-auto rounded-full" />
           </div>
-          
+
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[
               { name: 'Aura Wear', img: '/fashion.jpg' },
@@ -226,13 +226,13 @@ export default function Home() {
               JOIN THE <span className="text-accent">INNER CIRCLE</span>
             </h2>
             <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-              Get exclusive access to limited drops and members-only events. 
+              Get exclusive access to limited drops and members-only events.
               Elevate your status with Aura.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
+              <input
+                type="email"
+                placeholder="Enter your email"
                 className="px-6 py-4 rounded-xl bg-background border border-border focus:border-accent outline-none transition-colors min-w-[300px]"
               />
               <Button variant="cta" size="lg">Subscribe</Button>
