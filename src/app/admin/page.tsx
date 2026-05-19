@@ -36,8 +36,11 @@ export default function AdminDashboard() {
   const [products, setProducts] = React.useState<Product[]>([]);
   const [orders, setOrders] = React.useState<Order[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [activeTab, setActiveTab] = React.useState<'products' | 'orders'>('products');
-  const [orderFilter, setOrderFilter] = React.useState<OrderStatus>('PENDING');
+  const [activeTab, setActiveTab] = React.useState<'products' | 'orders'>('orders');
+  const [orderFilter, setOrderFilter] = React.useState<OrderStatus | 'ALL'>('ALL');
+  const [orderPage, setOrderPage] = React.useState(1);
+  const [totalOrders, setTotalOrders] = React.useState(0);
+  const orderLimit = 10;
 
   // Modals & Forms State
   const [showEditModal, setShowEditModal] = React.useState(false);
@@ -62,21 +65,28 @@ export default function AdminDashboard() {
     try {
       const [{ data: pResponse }, { data: oResponse }] = await Promise.all([
         productService.getAll(),
-        orderService.getAll(orderFilter)
+        orderService.getAll(orderFilter, orderPage, orderLimit)
       ]);
       
       const pData = pResponse.data || pResponse;
       const oData = oResponse.data || oResponse;
       
       setProducts(Array.isArray(pData) ? pData : []);
-      setOrders(Array.isArray(oData) ? oData : []);
+
+      const ordersArray = Array.isArray(oData) 
+        ? oData 
+        : (Array.isArray(oData.data) ? oData.data : []);
+      setOrders(ordersArray);
+
+      const totalCount = oData.total || oData.meta?.total || oData.meta?.totalItems || ordersArray.length;
+      setTotalOrders(totalCount);
     } catch (error) {
       console.error('Admin fetch error', error);
       toast.error('Failed to sync dashboard data');
     } finally {
       setLoading(false);
     }
-  }, [orderFilter]);
+  }, [orderFilter, orderPage]);
 
   React.useEffect(() => {
     if (!user || user.role !== 'ADMIN') {
@@ -388,10 +398,13 @@ export default function AdminDashboard() {
             >
               {/* Filter controls */}
               <div className="flex items-center space-x-4 bg-secondary/10 p-3 rounded-2xl border border-border/40 w-fit">
-                {['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].map((filter) => (
+                {['ALL', 'PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].map((filter) => (
                   <button
                     key={filter}
-                    onClick={() => setOrderFilter(filter as OrderStatus)}
+                    onClick={() => {
+                      setOrderPage(1);
+                      setOrderFilter(filter as OrderStatus | 'ALL');
+                    }}
                     className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-colors ${
                       orderFilter === filter 
                         ? 'gold-gradient text-white shadow-md shadow-accent/15' 
@@ -502,6 +515,35 @@ export default function AdminDashboard() {
                   </table>
                 </div>
               </GlassCard>
+
+              {/* Pagination controls */}
+              {totalOrders > orderLimit && (
+                <div className="flex flex-col sm:flex-row justify-between items-center bg-secondary/5 border border-border p-4 rounded-2xl gap-4">
+                  <span className="text-xs text-muted-foreground font-black uppercase tracking-widest">
+                    Showing Page {orderPage} of {Math.ceil(totalOrders / orderLimit)} ({totalOrders} Total Orders)
+                  </span>
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setOrderPage(prev => Math.max(prev - 1, 1))}
+                      disabled={orderPage === 1}
+                      className="rounded-xl px-4 text-xs font-bold uppercase tracking-wider"
+                    >
+                      Previous
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setOrderPage(prev => Math.min(prev + 1, Math.ceil(totalOrders / orderLimit)))}
+                      disabled={orderPage >= Math.ceil(totalOrders / orderLimit)}
+                      className="rounded-xl px-4 text-xs font-bold uppercase tracking-wider"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </motion.section>
           )}
         </AnimatePresence>
